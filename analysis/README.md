@@ -72,7 +72,7 @@ signal structure.
 For the analyzed signal:
 
 the signal contains 12 bits
-bit 0 is represented by a short + long pulse pair
+bit 0 is represented by a short + long pulse pair,
 bit 1 is represented by a long + short pulse pair
 the timing of the pulses is derived from the measured signal delay
 ## Data security
