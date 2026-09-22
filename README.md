@@ -26,13 +26,21 @@ The receiver-side measurement and analysis software has been implemented.
 ### Completed
 
 - RXB60 receiver connected to ESP32
+
 - Initial RF signal detection and identification
+
 - RCSwitch-based protocol analysis
+
 - Structured RF measurement collection
+
 - Repeated measurements across multiple buttons and remote controls
+
 - Python-based signal analysis
+
 - Pulse timing statistics
+
 - Signal frame visualization
+
 - Binary signal pattern analysis
 
 ### Planned
