@@ -1,130 +1,57 @@
 #include <RCSwitch.h>
 
-RCSwitch mySwitch = RCSwitch();
+RCSwitch rfReceiver;
 
-const int DATA_PIN = 34;
-
-const int BUTTONS = 3;
-const int REMOTES = 2;
-const int SAMPLES = 10;
-
-int buttonID = 1;
-int remoteID = 1;
-int sampleID = 1;
-
-void printHeader()
-{
-  Serial.println();
-  Serial.println("====================================");
-  Serial.print("GOMB: ");
-  Serial.print(buttonID);
-  Serial.print("/3   ");
-
-  Serial.print("Távirányító: ");
-  Serial.print(remoteID);
-  Serial.print("/2   ");
-
-  Serial.print("Nyomás: ");
-  Serial.print(sampleID);
-  Serial.print("/");
-  Serial.println(SAMPLES);
-
-  Serial.println("Nyomd meg a megfelelő gombot...");
-  Serial.println("====================================");
-}
-
-void nextMeasurement()
-{
-  sampleID++;
-
-  if(sampleID > SAMPLES)
-  {
-    sampleID = 1;
-    remoteID++;
-
-    if(remoteID > REMOTES)
-    {
-      remoteID = 1;
-      buttonID++;
-
-      if(buttonID > BUTTONS)
-      {
-        Serial.println();
-        Serial.println("####################################");
-        Serial.println(" MINDEN MÉRÉS ELKÉSZÜLT");
-        Serial.println("####################################");
-
-        while(true);
-      }
-
-      Serial.println();
-      Serial.println("====================================");
-      Serial.println(">>> KÖVETKEZŐ GOMB <<<");
-      Serial.print("Most a ");
-      Serial.print(buttonID);
-      Serial.println(". gomb következik.");
-      Serial.println("====================================");
-    }
-    else
-    {
-      Serial.println();
-      Serial.println("====================================");
-      Serial.println(">>> VÁLTS A 2. TÁVIRÁNYÍTÓRA <<<");
-      Serial.println("====================================");
-    }
-  }
-
-  delay(1200);
-  printHeader();
-}
+const uint8_t receiverDataPin = 34;
 
 void setup()
 {
-  Serial.begin(115200);
+    Serial.begin(115200);
 
-  mySwitch.enableReceive(digitalPinToInterrupt(DATA_PIN));
+    // RXB60 data output is connected to ESP32 GPIO 34.
+    rfReceiver.enableReceive(digitalPinToInterrupt(receiverDataPin));
 
-  Serial.println("RXB60 - ESP32 MÉRÉSI ÜZEMMÓD");
-  Serial.println("CSV log készül.");
-
-  printHeader();
+    Serial.println("RCSwitch signal test");
+    Serial.println("Press the remote control button...");
 }
 
 void loop()
 {
-  if(mySwitch.available())
-  {
-    Serial.print("DATA,");
-    Serial.print(buttonID);
-    Serial.print(",");
-    Serial.print(remoteID);
-    Serial.print(",");
-    Serial.print(sampleID);
-    Serial.print(",");
-    Serial.print(mySwitch.getReceivedValue());
-    Serial.print(",");
-    Serial.print(mySwitch.getReceivedBitlength());
-    Serial.print(",");
-    Serial.print(mySwitch.getReceivedProtocol());
-    Serial.print(",");
-    Serial.print(mySwitch.getReceivedDelay());
+    if (!rfReceiver.available())
+        return;
 
-    unsigned int* raw = mySwitch.getReceivedRawdata();
+    Serial.println();
+    Serial.println("===== RECEIVED SIGNAL =====");
 
-    for(int i=0;i<50;i++)
+    Serial.print("Value: ");
+    Serial.println(rfReceiver.getReceivedValue());
+
+    Serial.print("Bit length: ");
+    Serial.println(rfReceiver.getReceivedBitlength());
+
+    Serial.print("Protocol: ");
+    Serial.println(rfReceiver.getReceivedProtocol());
+
+    Serial.print("Delay: ");
+    Serial.println(rfReceiver.getReceivedDelay());
+
+    Serial.println("Raw timings:");
+
+    unsigned int* rawTimings = rfReceiver.getReceivedRawdata();
+
+    for (uint8_t i = 0; i < 50; i++)
     {
-      if(raw[i]==0) break;
+        if (rawTimings[i] == 0)
+            break;
 
-      Serial.print(",");
-      Serial.print(raw[i]);
+        if (i > 0)
+            Serial.print(" ");
+
+        Serial.print(rawTimings[i]);
     }
 
     Serial.println();
+    Serial.println("===========================");
 
-    Serial.println("✓ Mentve");
-
-    mySwitch.resetAvailable();
-
-    nextMeasurement();
-  }
+    rfReceiver.resetAvailable();
 }
