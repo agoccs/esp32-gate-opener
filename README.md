@@ -152,3 +152,30 @@ The RXB60 data output is connected to GPIO 34 of the ESP32.
           ↓
    Signal characterization
 ```
+## Software
+
+- Arduino IDE
+- ESP32 Arduino framework
+- RCSwitch library
+- Python
+- NumPy
+- pandas
+- Matplotlib
+
+## Data security
+
+Raw RF measurements capable of reproducing a specific gate-control signal
+are intentionally excluded from the public repository.
+
+The repository contains the measurement and analysis methodology without
+publishing reproducible gate-control data.
+
+## Future development
+
+The next development stages are:
+
+1. RF transmitter implementation
+2. Signal reproduction
+3. Wi-Fi connectivity
+4. Remote control interface
+5. Cloud or bot-based gate control
