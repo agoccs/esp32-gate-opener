@@ -1,55 +1,57 @@
 #include <RCSwitch.h>
 
-RCSwitch rfReceiver = RCSwitch();
+RCSwitch rfReceiver;
+
+const uint8_t receiverDataPin = 34;
 
 void setup()
 {
-  Serial.begin(115200);
+    Serial.begin(115200);
 
-  // RXB60 data output is connected to GPIO 34.
-  mySwitch.enableReceive(digitalPinToInterrupt(34));
+    // RXB60 data output is connected to ESP32 GPIO 34.
+    rfReceiver.enableReceive(digitalPinToInterrupt(receiverDataPin));
 
-  Serial.println("RCSwitch raw signal analyzer");
-  Serial.println("Press the remote...");
+    Serial.println("RCSwitch signal test");
+    Serial.println("Press the remote control button...");
 }
 
 void loop()
 {
-  if (mySwitch.available())
-  {
+    if (!rfReceiver.available())
+        return;
+
     Serial.println();
-    Serial.println("===== SIGNAL =====");
+    Serial.println("===== RECEIVED SIGNAL =====");
 
     Serial.print("Value: ");
-    Serial.println(mySwitch.getReceivedValue());
+    Serial.println(rfReceiver.getReceivedValue());
 
-    Serial.print("Bits: ");
-    Serial.println(mySwitch.getReceivedBitlength());
+    Serial.print("Bit length: ");
+    Serial.println(rfReceiver.getReceivedBitlength());
 
     Serial.print("Protocol: ");
-    Serial.println(mySwitch.getReceivedProtocol());
+    Serial.println(rfReceiver.getReceivedProtocol());
 
     Serial.print("Delay: ");
-    Serial.println(mySwitch.getReceivedDelay());
+    Serial.println(rfReceiver.getReceivedDelay());
 
-    Serial.println("Raw:");
+    Serial.println("Raw timings:");
 
-    unsigned int* raw = mySwitch.getReceivedRawdata();
+    unsigned int* rawTimings = rfReceiver.getReceivedRawdata();
 
-    for (unsigned int i = 0; i < 50; i++)
+    for (uint8_t i = 0; i < 50; i++)
     {
-      if (raw[i] == 0)
-        break;
+        if (rawTimings[i] == 0)
+            break;
 
-      Serial.print(raw[i]);
+        if (i > 0)
+            Serial.print(" ");
 
-      if (i < 49)
-        Serial.print(" ");
+        Serial.print(rawTimings[i]);
     }
 
     Serial.println();
-    Serial.println("==================");
+    Serial.println("===========================");
 
-    mySwitch.resetAvailable();
-  }
+    rfReceiver.resetAvailable();
 }
