@@ -180,6 +180,7 @@ The RF transmitter is based on the RF433-JTX 433 MHz ASK/OOK module, controlled 
 - VCC → ESP32 5V/VIN
 - External antenna connected to the transmitter module
 
+### `transmitter.ino`
 **Configuration**
 
 The public example does not contain the original remote-control codes or device-specific timing values. These parameters must be determined experimentally for the target transmitter and receiver.
