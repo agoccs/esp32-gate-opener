@@ -170,12 +170,34 @@ are intentionally excluded from the public repository.
 The repository contains the measurement and analysis methodology without
 publishing reproducible gate-control data.
 
+### RF transmitter
+
+The RF transmitter is based on the RF433-JTX 433 MHz ASK/OOK module, controlled by an ESP32 using the RCSwitch library.
+
+**Hardware connections**
+- DATA → ESP32 GPIO25
+- GND → ESP32 GND
+- VCC → ESP32 5V/VIN
+- External antenna connected to the transmitter module
+
+**Configuration**
+
+The public example does not contain the original remote-control codes or device-specific timing values. These parameters must be determined experimentally for the target transmitter and receiver.
+
+- `RF_CODE`: the code obtained from the user's own measurements.
+- `RF_BIT_LENGTH`: the measured or decoded bit length.
+- `RF_PULSE_US`: the pulse duration in microseconds.
+
+Start by testing the measured pulse duration. If the transmission is unreliable, test several values around the measured duration and document the results.
+
+The `delay()` function is used for software timing between operations; it is not the same as the RF protocol's pulse duration.
+
+**Safety note:** Only test with devices you own or are authorized to control. Do not expose real access codes or working credentials in a public repository.
+
 ## Future development
 
 The next development stages are:
 
-1. RF transmitter implementation
-2. Signal reproduction
-3. Wi-Fi connectivity
-4. Remote control interface
-5. Cloud or bot-based gate control
+1. Wi-Fi connectivity
+2. Remote control interface
+3. Cloud or bot-based gate control
