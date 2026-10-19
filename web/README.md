@@ -1,45 +1,47 @@
-# Webes vezérlőfelület
+# Web Control Panel
 
-A `web/` mappa a projekt egyszerű, mobilbarát webes kezelőfelületének forráskódját tartalmazza.
+The `web/` folder contains the projects web-based control panel's code.
 
-## Fájlok
+## Files
 
-- `index.html` – bejelentkezési oldal és a három kaput megjelenítő vezérlőfelület.
-- `style.css` – megjelenés és mobilos elrendezés.
-- `app.js` – Firebase-bejelentkezés és ESP32-státusz kijelzése.
-- `firebase-config.example.js` – példa a Firebase webalkalmazás konfigurációjára.
+- `index.html` – login page and control panel for my three virtual gate opener button (set according to yours).
+- `style.css` – Style and mobile layout.
+- `app.js` – Firebase-login and ESP status checker.
+- `firebase-config.example.js` – example for the Firebase web-app configuration.
 
-## Helyi előnézet
+## Local preview
 
-A fájlokat ne közvetlenül `file://` URL-ről nyisd meg, mert a JavaScript modulok és a Firebase CDN-ből betöltött könyvtárai HTTP/HTTPS kiszolgálást igényelhetnek. Ha telepítve van a Python, nyiss terminált ebben a mappában, majd futtasd:
+Do not open the files directly from a `file://` URL, as JavaScript modules and Firebase libraries loaded from the CDN may require HTTP/HTTPS serving. If you have Python installed, open a terminal in this folder and run:
 
 ```bash
 python -m http.server 8000
 ```
 
-Ezután nyisd meg a `http://localhost:8000` címet a böngészőben. A látvány így ellenőrizhető Firebase-konfiguráció nélkül is. A tényleges bejelentkezéshez az alábbi beállítások kellenek.
+Then open `http://localhost:8000` in your browser. This way, you can check how it looks even without a Firebase configuration. For the actual login, the following settings are required.
 
-## Firebase-beállítás
+## Firebase-setup
 
-1. Hozz létre Firebase-projektet és regisztrálj benne Web Appot.
-2. Kapcsold be az Authentication → Sign-in method → Email/Password szolgáltatást.
-3. Hozd létre a használható felhasználókat a Firebase konzolban; nyilvános regisztráció nem része ennek az oldalnak.
-4. Engedélyezd a Realtime Database-t, és hozz létre szigorú olvasási/írási szabályokat.
-5. Másold a `firebase-config.example.js` fájlt `firebase-config.local.js` néven, és töltsd ki a Firebase konzolban látható konfigurációval, beleértve a pontos `databaseURL` értéket is.
-6. A `firebase-config.local.js` ki van zárva a Gitből a gyökér `.gitignore` fájlban. A frontend konfigurációja ettől még látható lesz a böngészőben; a jogosultságokat a Firebase Authentication és a biztonsági szabályok biztosítják.
+1. Make a Firebase-project and register a Web App.
+2. Turn on Authentication → Sign-in method → Email/Password.
+3. Create users for running tests inside Firebase console; public registration is disabled.
+4. Allow Realtime Database, and create strict read/write rules.
+5. Copy `firebase-config.example.js` file as `firebase-config.local.js` and fill up with configuration seen in Firebase console, using exact `databaseURL` values.
+6. The `firebase-config.local.js` is not inside the Git as it is in `.gitignore` file. The front-end configuration is visible in browser; the login authentication managed by Firebase Authentication.
 
-## ESP32 online állapot
+## ESP32 online status
 
-A weboldal a Realtime Database `device/lastSeen` útvonalát figyeli. Az ESP32-programnak később legalább 15 másodpercenként frissítenie kell ezt az értéket Unix epoch **milliszekundumban**. A weboldal akkor jelez `Online` állapotot, ha az utolsó életjel legfeljebb 45 másodperces. Régi életjelet `Offline` állapotként jelez, hiányzó adatnál pedig `Még nincs életjel` látható.
+The website monitors the Realtime Database `device/lastSeen` path. The ESP32 program must later update this value at least every 15 seconds in Unix epoch **milliseconds**. The website indicates an `Online` status if the last heartbeat is at most 45 seconds old. An old heartbeat is indicated as an `Offline` status, and if data is missing, `No heartbeat yet` is displayed.
 
-A státuszfigyelés most csak frontend-előkészítés: amíg az ESP32 nem ír életjelet, nem lehet megbízhatóan online/offline állapotot megállapítani.
+Status monitoring is currently just frontend preparation: until the ESP32 writes a heartbeat, it is not possible to reliably determine the online/offline status.
 
-## Vezérlés állapota
+## Control status
 
-A három vezérlőgomb szándékosan le van tiltva. Még nincs bekötve a távoli parancsküldés, ezért ezen az oldalon jelenleg nem indítható rádiós adás.
+The three control buttons are intentionally disabled. Remote command sending is not yet connected, so radio transmission cannot currently be initiated on this page.
 
-## Biztonság
+## Security
 
-- Ne commitold a Wi-Fi-jelszót, felhasználói jelszót, ESP32-titkot, Admin SDK-kulcsot vagy működő RF-kódot.
-- Ne engedélyezz nyilvános adatbázis-írást.
-- A vezérlőparancsok bekötése előtt külön parancsérvényesítést, egyszeri végrehajtást és újraindítás esetén biztonságos viselkedést kell megvalósítani.
+- Do not commit the Wi-Fi password, user password, ESP32 secret, Admin SDK key, or a working RF code.
+
+- Do not allow public database writing.
+
+- Before connecting control commands, separate command validation, single execution, and safe behavior upon restart must be implemented.
