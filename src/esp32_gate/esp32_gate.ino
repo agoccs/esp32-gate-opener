@@ -1,6 +1,6 @@
-// ESP32 -> Firebase eletjel (heartbeat)
-// 10 masodpercenkent beirja a device/lastSeen erteket (a Firebase szerver ideje, ms).
-// A weboldal ez alapjan jelzi az Online / Offline allapotot.
+// ESP32 -> Firebase heartbeat
+// sets device/lastSeen value every 10s (Firebase server time, ms).
+// Webpage sets Online / Offline status according to this.
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -8,7 +8,7 @@
 #include "secrets.h"
 
 const unsigned long HEARTBEAT_MS      = 10UL * 1000UL;
-const unsigned long TOKEN_LIFETIME_MS = 50UL * 60UL * 1000UL;  // a token 60 percig ervenyes
+const unsigned long TOKEN_LIFETIME_MS = 50UL * 60UL * 1000UL;  // token valid for 60s
 const unsigned long WIFI_RETRY_MS     = 10UL * 1000UL;
 
 String idToken = "";
@@ -18,7 +18,7 @@ unsigned long lastWifiTry = 0;
 
 bool signIn() {
   WiFiClientSecure client;
-  client.setInsecure();  // TODO: tanusitvany-ellenorzes a parancsok bekotese elott
+  client.setInsecure();
   HTTPClient http;
 
   String url = String("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=") + FIREBASE_API_KEY;
@@ -52,17 +52,17 @@ bool signIn() {
 
 bool sendHeartbeat() {
   WiFiClientSecure client;
-  client.setInsecure();  // TODO: tanusitvany-ellenorzes a parancsok bekotese elott
+  client.setInsecure();
   HTTPClient http;
 
   String url = String(DATABASE_URL) + "/device/lastSeen.json?auth=" + idToken;
   if (!http.begin(client, url)) return false;
   http.addHeader("Content-Type", "application/json");
 
-  int code = http.PUT("{\".sv\":\"timestamp\"}");  // a szerver irja be az aktualis idot
+  int code = http.PUT("{\".sv\":\"timestamp\"}");  // server sets actual time
   http.end();
 
-  if (code == 401 || code == 403) idToken = "";  // lejart/hibas token -> ujra bejelentkezunk
+  if (code == 401 || code == 403) idToken = "";  // expired/wrong token -> resign-in
   if (code != 200) Serial.printf("Eletjel SIKERTELEN (HTTP %d)\n", code);
   return code == 200;
 }
@@ -75,7 +75,7 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.setAutoReconnect(true);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  lastBeat = millis() - HEARTBEAT_MS;  // az elso eletjel azonnal menjen
+  lastBeat = millis() - HEARTBEAT_MS;  // first heartbeat immadieately
 }
 
 void loop() {
