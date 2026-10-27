@@ -1,0 +1,12 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "device": {
+      ".read": "auth != null",
+      "lastSeen": {
+        ".write": "auth != null && auth.token.email == 'esp32@gate.local'"
+      }
+    }
+  }
+}
