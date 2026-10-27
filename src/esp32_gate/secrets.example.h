@@ -1,17 +1,14 @@
-// Masold ezt a fajlt "secrets.h" neven, es toltsd ki.
-// A secrets.h-t NE tedd fel GitHubra (kerul a .gitignore-ba).
-// Tipp: az ESP32 csak 2.4 GHz-es Wi-Fi-t tud.
-// A jelszavakban ne legyen idezojel (") es perjel (\).
+// Copy this file as Masold "secrets.h" and fill
 
-#define WIFI_SSID        "A_WIFI_NEVED"
-#define WIFI_PASSWORD    "A_WIFI_JELSZAVAD"
+#define WIFI_SSID        "YOUR_WIFI_NAME"
+#define WIFI_PASSWORD    "YOUR_WIFI_PASSWORD"
 
 // web/firebase-config.local.js -> apiKey
 #define FIREBASE_API_KEY "AIza..."
 
-// web/firebase-config.local.js -> databaseURL (a vegen NINCS perjel)
-#define DATABASE_URL     "https://esp32-gate-opener-825-default-rtdb.europe-west1.firebasedatabase.app"
+// web/firebase-config.local.js -> databaseURL
+#define DATABASE_URL     "https://yourwebsite.com"
 
-// A Firebase Authentication-ben az ESP32-nek letrehozott felhasznalo
-#define DEVICE_EMAIL     "esp32@gate.local"
-#define DEVICE_PASSWORD  "AZ_ESP32_JELSZAVA"
+// Firebase Authentication user for ESP
+#define DEVICE_EMAIL     "e.g.: esp32@gate.local"
+#define DEVICE_PASSWORD  "ESP's password
