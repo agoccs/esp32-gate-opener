@@ -1,0 +1,14 @@
+# Secrets - never commit these
+web/firebase-config.local.js
+web/firebase_config*
+src/esp32_gate/secrets.h
+*.local.js
+
+# Firebase local cache / logs
+.firebase/
+firebase-debug.log*
+
+# Python / editor noise
+__pycache__/
+.vscode/
+.idea/
