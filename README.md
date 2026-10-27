@@ -241,4 +241,3 @@ Raw RF measurements and working RF codes capable of reproducing a specific gate-
 1. Command path from the web buttons to the ESP32
 2. Merging RF transmission into the Wi-Fi firmware
 3. Hardening: certificate validation, restricting control to named users
-4. Optional: other control interfaces (e.g. bot-based control)
