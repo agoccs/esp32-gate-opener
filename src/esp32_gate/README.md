@@ -1,4 +1,4 @@
-# ESP32 Gate Firmware (Wi-Fi + Firebase)
+# ESP32 Gate Firmware (Wi-Fi + Firebase) 
 
 This sketch connects the ESP32 to Wi-Fi and Firebase. At the moment it implements the **online-status heartbeat**: every 10 seconds the ESP32 reports to the Realtime Database that it is alive, and the web control panel shows it as *Online*.
 
