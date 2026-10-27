@@ -83,4 +83,4 @@ This publishes the `web/` folder to Firebase Hosting and the rules from `databas
 
 - Never commit Wi-Fi passwords, user passwords, the ESP32 device password, Admin SDK keys or working RF codes.
 - Never allow public read or write access in the database rules.
-- Keep stray copies of the configuration (for example `firebase_config`) out of this folder, because everything inside `web/` is deployed to the public site.
+- Keep stray copies of the configuration (for example `firebase_config`) out of this folder, because everything inside `web/` is deployed to the public site. 
