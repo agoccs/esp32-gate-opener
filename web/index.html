@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kapuvezérlés</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar"><div class="brand-mark" aria-hidden="true">⌂</div><span>Kapuvezérlés</span></header>
+
+    <section id="loginView" class="login-view" aria-labelledby="loginTitle">
+      <div class="login-card">
+        <h1 id="loginTitle">Bejelentkezés</h1>
+        <p class="note">Privát kapuvezérlő. Jelentkezz be a kapuk eléréséhez.</p>
+        <form id="loginForm">
+          <label for="email">E-mail-cím</label>
+          <input id="email" type="email" autocomplete="username" required>
+          <label for="password">Jelszó</label>
+          <input id="password" type="password" autocomplete="current-password" required>
+          <button id="loginButton" class="primary-button" type="submit">Bejelentkezés</button>
+          <p id="authMessage" class="message" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <section id="dashboardView" class="dashboard" hidden aria-labelledby="dashboardTitle">
+      <div class="dashboard-topline">
+        <h1 id="dashboardTitle">Kapuk</h1>
+        <button id="logoutButton" class="text-button" type="button">Kijelentkezés</button>
+      </div>
+      <div class="device-status" role="status" aria-live="polite">
+        <span id="deviceStatusDot" class="status-dot unknown" aria-hidden="true"></span>
+        <span>ESP32:</span>
+        <strong id="deviceStatusText">Állapot még nem érhető el</strong>
+      </div>
+      <div class="gate-list">
+        <article class="gate-card"><div><span class="gate-number">1</span><h2>Bal garázs</h2></div><button class="gate-button" type="button" disabled>Nyitás / zárás</button></article>
+        <article class="gate-card"><div><span class="gate-number">2</span><h2>Jobb garázs</h2></div><button class="gate-button" type="button" disabled>Nyitás / zárás</button></article>
+        <article class="gate-card"><div><span class="gate-number">3</span><h2>Kapu</h2></div><button class="gate-button" type="button" disabled>Nyitás / zárás</button></article>
+      </div>
+      <p class="note">A gombok az ESP32-kapcsolat elkészültéig le vannak tiltva.</p>
+    </section>
+  </main>
+</body>
+</html>
