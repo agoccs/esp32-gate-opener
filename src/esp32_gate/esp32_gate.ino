@@ -8,7 +8,7 @@
 #include "secrets.h"
 
 const unsigned long HEARTBEAT_MS      = 10UL * 1000UL;
-const unsigned long TOKEN_LIFETIME_MS = 50UL * 60UL * 1000UL;  // token valid for 60s
+const unsigned long TOKEN_LIFETIME_MS = 50UL * 60UL * 1000UL;  // token valid for 60 minutes
 const unsigned long WIFI_RETRY_MS     = 10UL * 1000UL;
 
 String idToken = "";
@@ -18,7 +18,7 @@ unsigned long lastWifiTry = 0;
 
 bool signIn() {
   WiFiClientSecure client;
-  client.setInsecure();
+  client.setInsecure(); // TODO: add certificate validation before wiring the commands
   HTTPClient http;
 
   String url = String("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=") + FIREBASE_API_KEY;
