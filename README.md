@@ -1,4 +1,4 @@
-# ESP32 Gate Opener
+# ESP32 Gate Opener 
 
 ESP32-based smart gate control system with 433.92 MHz RF signal analysis,
 RF transmission, Wi-Fi connectivity and remote control.
