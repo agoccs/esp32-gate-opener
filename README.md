@@ -32,7 +32,7 @@ The RF side (measurement, analysis and a standalone transmitter test) was finish
 - RXB60 receiver connected to ESP32, RF signal detection and protocol identification
 - Python-based signal analysis (timing statistics, frame and bit-pattern visualization)
 - Standalone RF433-JTX transmitter test with RCSwitch
-- ESP32 Wi-Fi connection and authenticated Firebase heartbeat
+- ESP32 Wi-Fi connection and authenticated Firebase heartbeat, with TLS certificate validation (Google root certificates, NTP time)
 - Firebase-hosted web UI with login and ESP32 online/offline indicator
 - Database security rules (read: logged-in users, heartbeat write: ESP32 account only)
 
@@ -40,7 +40,6 @@ The RF side (measurement, analysis and a standalone transmitter test) was finish
 
 - Command path: web buttons → database → ESP32 (command validation, single execution)
 - Merging the RF transmitter code into the Wi-Fi firmware
-- Certificate validation for the ESP32's HTTPS connections
 - Safe behavior after restart / power loss
 
 ## Repository structure
@@ -65,6 +64,7 @@ esp32-gate-opener/
 │   ├── esp32_gate/          # ESP32 Wi-Fi + Firebase firmware
 │   │   ├── README.md
 │   │   ├── esp32_gate.ino
+│   │   ├── google_roots.h
 │   │   └── secrets.example.h
 │   ├── receiver/            # RF measurement firmware
 │   └── transmitter/         # Standalone RF transmitter test
@@ -240,4 +240,4 @@ Raw RF measurements and working RF codes capable of reproducing a specific gate-
 
 1. Command path from the web buttons to the ESP32
 2. Merging RF transmission into the Wi-Fi firmware
-3. Hardening: certificate validation, restricting control to named users
+3. Hardening: restricting control to named users
