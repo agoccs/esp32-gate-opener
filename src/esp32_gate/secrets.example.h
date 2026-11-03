@@ -11,4 +11,4 @@
 
 // Firebase Authentication user for ESP
 #define DEVICE_EMAIL     "e.g.: esp32@gate.local"
-#define DEVICE_PASSWORD  "ESP's password
+#define DEVICE_PASSWORD  "YOUR_ESP32_PASSWORD"
