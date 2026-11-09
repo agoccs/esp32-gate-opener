@@ -1,20 +1,4 @@
-// ESP32 gate opener: heartbeat + commands from the web page + RF transmission
-//
-// - Every 10 s it writes device/lastSeen (server time), device/rssi and, once
-//   after boot, device/lastBoot. The web page shows Online/Offline from this.
-// - Every 2 s it asks the database for commands with status "pending".
-//   Each command is handled at most once: status "taken" is written BEFORE
-//   transmitting, so a restart in between can lose a command but never repeat it.
-// - Safety checks: commands older than 20 s or sent before this boot expire,
-//   10 s cooldown per gate, at most 6 transmissions per minute.
-// - HTTPS connections are verified against the Google root certificates
-//   (google_roots.h); the clock is set from NTP first, because certificate
-//   validation needs the real date.
-//
-// Private settings: secrets.h (Wi-Fi, Firebase) and rf_codes.h (RF codes).
-// Neither is published; see secrets.example.h and rf_codes.example.h.
-//
-// Libraries (Arduino IDE -> Library Manager): ArduinoJson (7.x), rc-switch.
+// ESP32 gate opener: heartbeat, web commands, RF transmission
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -28,7 +12,7 @@
 #include "google_roots.h"
 
 #ifndef RF_DRY_RUN
-#define RF_DRY_RUN true   // safe default: only print, never transmit
+#define RF_DRY_RUN true
 #endif
 
 // ---- Settings ----
@@ -57,8 +41,6 @@ Gate gates[] = {
 };
 const int GATE_COUNT = sizeof(gates) / sizeof(gates[0]);
 
-// Defined here, before any function: the Arduino IDE adds function
-// prototypes above the first function, and they need this type.
 struct PendingCommand {
   String id;
   String gate;
@@ -179,8 +161,6 @@ bool signIn() {
   return true;
 }
 
-// One request to the Realtime Database over the reused connection.
-// path: "/" for the root, "/commands" etc. Returns the HTTP code.
 int dbRequest(const char *method, const String &path, const String &query,
               const String &body, String *response) {
   String url = String(DATABASE_URL) + path + ".json?auth=" + idToken + query;
@@ -199,7 +179,6 @@ int dbRequest(const char *method, const String &path, const String &query,
 }
 
 bool sendHeartbeat() {
-  // Multi-path update: each path is checked by its own database rule.
   String body = String("{\"device/lastSeen\":{\".sv\":\"timestamp\"},\"device/rssi\":") + String((int)WiFi.RSSI());
   if (!bootReported) body += ",\"device/lastBoot\":{\".sv\":\"timestamp\"}";
   body += "}";
@@ -248,7 +227,7 @@ void handleCommand(const PendingCommand &c) {
   if (g->hasRun && millis() - g->lastRunMs < GATE_COOLDOWN_MS) { setStatus(c.id, "failed", "cooldown"); return; }
   if (rateLimited()) { setStatus(c.id, "failed", "rate limit"); return; }
 
-  // Mark as taken first. If this fails, do NOT transmit.
+  // taken first, transmit only if it succeeded
   if (!setStatus(c.id, "taken", nullptr)) {
     Serial.println("  Nem sikerult atvenni, nincs adas");
     return;
@@ -337,7 +316,7 @@ void setup() {
 void loop() {
   unsigned long now = millis();
 
-  // Software watchdog: no successful heartbeat for 10 minutes -> restart
+  // watchdog
   if (now - lastBeatOk >= WATCHDOG_MS) {
     Serial.println("10 perce nincs sikeres eletjel, ujrainditas...");
     delay(200);
@@ -366,7 +345,7 @@ void loop() {
     Serial.printf(", jelerosseg: %d dBm\n", WiFi.RSSI());
   }
 
-  // No HTTPS before the clock is set, otherwise certificate checks fail.
+  // TLS needs the correct time
   if (!timeSynced) {
     timeSynced = syncTime();
     if (!timeSynced) {

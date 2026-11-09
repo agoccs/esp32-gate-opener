@@ -1,6 +1,6 @@
 # Web Control Panel
 
-The `web/` folder contains the project's web control panel, hosted on Firebase Hosting. It is deliberately simple: a login page and, after login, three gate cards and an indicator showing whether the ESP32 is online. The interface text is in Hungarian.
+The `web/` folder contains the project's web control panel, hosted on Firebase Hosting. It is deliberately simple: a login page and, after login, three gate cards and an indicator showing whether the ESP32 is online.
 
 ## Files
 

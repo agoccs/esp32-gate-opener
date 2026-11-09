@@ -17,9 +17,7 @@ EXCLUDED_MEASUREMENTS = {
     (2, 1, 1),
 }
 
-# The real gate codes are not published. Create a private file next to this
-# script, analysis/signal_codes_local.py (listed in .gitignore), containing:
-#   SIGNAL_CODES = [<code 1>, <code 2>, <code 3>]
+# Codes are in the private signal_codes_local.py
 try:
     from signal_codes_local import SIGNAL_CODES
 except ImportError:

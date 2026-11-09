@@ -72,7 +72,7 @@ Keep `RF_DRY_RUN true` for the first tests: the ESP32 then handles commands norm
 1. Open `esp32_gate.ino` in the Arduino IDE, select the ESP32 board and port, upload.
 2. Open the Serial Monitor at **115200 baud**.
 
-Expected output (messages are in Hungarian without accents):
+Expected output:
 
 ```
 ESP32 kapuvezerlo - eletjel + parancsok

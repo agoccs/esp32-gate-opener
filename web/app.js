@@ -31,7 +31,6 @@ let statusRefreshTimer = null;
 let lastSeenMs = null;
 let deviceOnline = false;
 
-// Per gate: { confirmTimer, lockedUntil, busy, stopWatch, watchTimers[] }
 const gateState = {};
 for (const button of gateButtons) {
   gateState[button.dataset.gate] = { confirmTimer: null, lockedUntil: 0, busy: false, stopWatch: null, watchTimers: [] };
@@ -99,7 +98,6 @@ function refreshDeviceStatus() {
     deviceOnline = false;
     setDeviceStatus("unknown", "Még nincs életjel");
   } else {
-    // The ESP32 writes device/lastSeen as server time in Unix epoch milliseconds.
     const ageMs = Date.now() - lastSeenMs;
     deviceOnline = ageMs >= -10_000 && ageMs <= ONLINE_MAX_AGE_MS;
     if (deviceOnline) setDeviceStatus("online", "Online");
