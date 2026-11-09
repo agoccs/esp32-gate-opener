@@ -84,3 +84,11 @@ Raw RF measurements capable of reproducing a specific gate-control signal
 are not included in the public repository.
 
 Only the analysis software and the methodology are published.
+
+## Private configuration
+
+The measured gate codes are not part of the repository. Before running `signal_analysis.py`, create `analysis/signal_codes_local.py` (ignored by Git) with one line:
+
+```python
+SIGNAL_CODES = [<code 1>, <code 2>, <code 3>]
+```

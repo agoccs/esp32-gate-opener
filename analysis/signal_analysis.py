@@ -17,7 +17,15 @@ EXCLUDED_MEASUREMENTS = {
     (2, 1, 1),
 }
 
-SIGNAL_CODES = [1781, 1782, 1783]
+# The real gate codes are not published. Create a private file next to this
+# script, analysis/signal_codes_local.py (listed in .gitignore), containing:
+#   SIGNAL_CODES = [<code 1>, <code 2>, <code 3>]
+try:
+    from signal_codes_local import SIGNAL_CODES
+except ImportError:
+    raise SystemExit(
+        "Missing analysis/signal_codes_local.py with SIGNAL_CODES = [...]"
+    )
 
 PROTOCOL_ID = 11
 BIT_COUNT = 12
@@ -1025,10 +1033,8 @@ def create_protocol_summary(
         ["Közös delay átlaga [µs]", mean_delay],
         ["Bit 0 kódolása", "rövid + hosszú"],
         ["Bit 1 kódolása", "hosszú + rövid"],
-        ["1781 bináris", to_binary(1781)],
-        ["1782 bináris", to_binary(1782)],
-        ["1783 bináris", to_binary(1783)],
     ]
+    rows += [[f"{code} bináris", to_binary(code)] for code in SIGNAL_CODES]
 
     for code in SIGNAL_CODES:
 
