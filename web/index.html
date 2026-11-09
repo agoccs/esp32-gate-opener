@@ -35,13 +35,35 @@
         <span id="deviceStatusDot" class="status-dot unknown" aria-hidden="true"></span>
         <span>ESP32:</span>
         <strong id="deviceStatusText">Állapot még nem érhető el</strong>
+        <span id="deviceSignal" class="device-signal"></span>
       </div>
+
+      <p id="accessNote" class="access-note" hidden></p>
+
       <div class="gate-list">
-        <article class="gate-card"><div><span class="gate-number">1</span><h2>Bal garázs</h2></div><button class="gate-button" type="button" disabled>Nyitás / zárás</button></article>
-        <article class="gate-card"><div><span class="gate-number">2</span><h2>Jobb garázs</h2></div><button class="gate-button" type="button" disabled>Nyitás / zárás</button></article>
-        <article class="gate-card"><div><span class="gate-number">3</span><h2>Kapu</h2></div><button class="gate-button" type="button" disabled>Nyitás / zárás</button></article>
+        <article class="gate-card">
+          <div class="gate-info">
+            <span class="gate-number">1</span>
+            <div><h2>Bal garázs</h2><p class="gate-state" data-state-for="bal" aria-live="polite"></p></div>
+          </div>
+          <button class="gate-button" type="button" data-gate="bal" disabled>Nyitás / zárás</button>
+        </article>
+        <article class="gate-card">
+          <div class="gate-info">
+            <span class="gate-number">2</span>
+            <div><h2>Jobb garázs</h2><p class="gate-state" data-state-for="jobb" aria-live="polite"></p></div>
+          </div>
+          <button class="gate-button" type="button" data-gate="jobb" disabled>Nyitás / zárás</button>
+        </article>
+        <article class="gate-card">
+          <div class="gate-info">
+            <span class="gate-number">3</span>
+            <div><h2>Kapu</h2><p class="gate-state" data-state-for="kapu" aria-live="polite"></p></div>
+          </div>
+          <button class="gate-button" type="button" data-gate="kapu" disabled>Nyitás / zárás</button>
+        </article>
       </div>
-      <p class="note">A gombok az ESP32-kapcsolat elkészültéig le vannak tiltva.</p>
+      <p class="note">A gombok csak akkor aktívak, ha az ESP32 online. Az első érintés megerősítést kér, a második küldi el a parancsot. Csak akkor használd, ha biztos vagy benne, hogy a kapu útjában nincs senki.</p>
     </section>
   </main>
 </body>

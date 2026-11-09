@@ -144,10 +144,18 @@ input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #4da3ff22; }
   border-radius: 14px;
   background: var(--panel);
 }
-.gate-card > div { display: flex; align-items: center; gap: 13px; min-width: 0; }
+.gate-info { display: flex; align-items: center; gap: 13px; min-width: 0; }
 .gate-number { display: grid; place-items: center; width: 38px; height: 38px; flex: 0 0 auto; border: 1px solid var(--border); border-radius: 10px; color: #a9d5ff; font-size: .83rem; font-weight: 800; }
 .gate-card h2 { margin: 0; font-size: 1rem; font-weight: 650; }
 .gate-button { min-width: 124px; background: #2c4259; color: #c2d0de; border: 1px solid #405873; font-size: .82rem; padding-inline: 12px; }
+.gate-button:not(:disabled) { background: var(--accent); color: #06182b; border-color: transparent; }
+.gate-button:not(:disabled):hover { background: var(--accent-hover); }
+.gate-button.confirm, .gate-button.confirm:hover { background: #ffb547; color: #2b1a00; }
+.gate-state { min-height: 1.2em; margin: 4px 0 0; color: var(--muted); font-size: .8rem; line-height: 1.35; }
+.gate-state.ok { color: #87ebbf; }
+.gate-state.error { color: #ffaaaa; }
+.device-signal { color: var(--muted); }
+.access-note { margin: 0 0 16px; padding: 12px 14px; border: 1px solid #6b4a2a; border-radius: 12px; background: #2a2016; color: #ffd9a8; font-size: .85rem; line-height: 1.5; overflow-wrap: anywhere; }
 .note { margin: 15px 2px 0; color: var(--muted); font-size: .83rem; line-height: 1.5; }
 
 footer { margin-top: auto; padding: 22px 0 25px; color: #71839a; font-size: .78rem; text-align: center; }

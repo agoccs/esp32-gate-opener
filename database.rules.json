@@ -2,10 +2,60 @@
   "rules": {
     ".read": false,
     ".write": false,
+
+    "allowedUsers": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid"
+      }
+    },
+
     "device": {
-      ".read": "auth != null",
+      ".read": "auth != null && root.child('allowedUsers').child(auth.uid).val() === true",
       "lastSeen": {
-        ".write": "auth != null && auth.token.email == 'esp32@gate.local'"
+        ".write": "auth != null && auth.token.email === 'esp32@gate.local'",
+        ".validate": "newData.isNumber() && newData.val() <= now"
+      },
+      "lastBoot": {
+        ".write": "auth != null && auth.token.email === 'esp32@gate.local'",
+        ".validate": "newData.isNumber() && newData.val() <= now"
+      },
+      "rssi": {
+        ".write": "auth != null && auth.token.email === 'esp32@gate.local'",
+        ".validate": "newData.isNumber() && newData.val() >= -127 && newData.val() <= 0"
+      },
+      "$other": {
+        ".validate": false
+      }
+    },
+
+    "commands": {
+      ".read": "auth != null && auth.token.email === 'esp32@gate.local'",
+      ".indexOn": ["status"],
+      "$cmd": {
+        ".read": "auth != null && data.child('requestedBy').val() === auth.uid",
+        ".write": "auth != null && ((!data.exists() && root.child('allowedUsers').child(auth.uid).val() === true) || (data.exists() && newData.exists() && auth.token.email === 'esp32@gate.local'))",
+        ".validate": "$cmd.length <= 40 && $cmd.matches(/^[-_A-Za-z0-9]+$/) && newData.hasChildren(['gate', 'status', 'requestedAt', 'requestedBy'])",
+        "gate": {
+          ".validate": "newData.isString() && (newData.val() === 'bal' || newData.val() === 'jobb' || newData.val() === 'kapu') && (!data.exists() || newData.val() === data.val())"
+        },
+        "requestedBy": {
+          ".validate": "newData.isString() && ((!data.exists() && newData.val() === auth.uid) || (data.exists() && newData.val() === data.val()))"
+        },
+        "requestedAt": {
+          ".validate": "newData.isNumber() && ((!data.exists() && newData.val() <= now && newData.val() > now - 60000) || (data.exists() && newData.val() === data.val()))"
+        },
+        "status": {
+          ".validate": "newData.isString() && ((!data.exists() && newData.val() === 'pending') || (data.exists() && (newData.val() === data.val() || (data.val() === 'pending' && (newData.val() === 'taken' || newData.val() === 'expired' || newData.val() === 'failed')) || (data.val() === 'taken' && (newData.val() === 'done' || newData.val() === 'failed')))))"
+        },
+        "handledAt": {
+          ".validate": "auth.token.email === 'esp32@gate.local' && newData.isNumber() && newData.val() <= now"
+        },
+        "reason": {
+          ".validate": "auth.token.email === 'esp32@gate.local' && newData.isString() && newData.val().length <= 40"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     }
   }

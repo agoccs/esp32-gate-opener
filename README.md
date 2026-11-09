@@ -18,14 +18,13 @@ The development process is divided into several stages:
 
 ## Current status
 
-The Wi-Fi / cloud part is working end to end:
+The full remote-control path is implemented and ready for testing at the gates:
 
-- the ESP32 connects to Wi-Fi and signs in to Firebase Authentication with its own device account;
-- every 10 seconds it writes a server-side timestamp to the Firebase Realtime Database (`device/lastSeen`);
-- the web control panel (Firebase Hosting) requires a login and shows whether the ESP32 is online;
-- database rules allow only logged-in users to read the status and only the ESP32 account to write it.
-
-The RF side (measurement, analysis and a standalone transmitter test) was finished in the earlier stages. The two parts are not merged yet: the three web buttons are still disabled and the Wi-Fi firmware does not transmit RF signals yet.
+- the ESP32 connects to Wi-Fi, sets its clock from NTP and signs in to Firebase over certificate-validated HTTPS;
+- every 10 seconds it reports a heartbeat (`device/lastSeen`) and the Wi-Fi signal strength (`device/rssi`);
+- the web control panel (Firebase Hosting) requires a login, shows whether the ESP32 is online and has three gate buttons;
+- a button press creates a command in the Realtime Database; the ESP32 polls for new commands, checks them, transmits the RF code once and reports the result back to the page;
+- database rules allow only listed users to send commands and only the ESP32 account to handle them.
 
 ### Completed
 
@@ -34,13 +33,15 @@ The RF side (measurement, analysis and a standalone transmitter test) was finish
 - Standalone RF433-JTX transmitter test with RCSwitch
 - ESP32 Wi-Fi connection and authenticated Firebase heartbeat, with TLS certificate validation (Google root certificates, NTP time)
 - Firebase-hosted web UI with login and ESP32 online/offline indicator
-- Database security rules (read: logged-in users, heartbeat write: ESP32 account only)
+- Command path: web buttons → database → ESP32 → RF transmission → status back to the page
+- Safety logic: at-most-once execution, 20 s expiry, per-gate cooldown, rate limit, no replay after restart
+- Database security rules with an allow-list of users and validated command fields
+- Software watchdog (restart after 10 minutes without a successful heartbeat)
 
 ### Planned
 
-- Command path: web buttons → database → ESP32 (command validation, single execution)
-- Merging the RF transmitter code into the Wi-Fi firmware
-- Safe behavior after restart / power loss
+- Field test at the gates (range, antenna position, Wi-Fi signal in the garage)
+- Final documentation with wiring diagram and photos
 
 ## Repository structure
 
@@ -61,11 +62,12 @@ esp32-gate-opener/
 │   └── firebase-config.example.js
 │
 ├── src/
-│   ├── esp32_gate/          # ESP32 Wi-Fi + Firebase firmware
+│   ├── esp32_gate/          # Final ESP32 firmware (Wi-Fi, Firebase, commands, RF)
 │   │   ├── README.md
 │   │   ├── esp32_gate.ino
 │   │   ├── google_roots.h
-│   │   └── secrets.example.h
+│   │   ├── secrets.example.h
+│   │   └── rf_codes.example.h
 │   ├── receiver/            # RF measurement firmware
 │   └── transmitter/         # Standalone RF transmitter test
 │
@@ -75,22 +77,24 @@ esp32-gate-opener/
 ## System architecture
 
 ```
- Browser (web/)                                   ESP32 (src/esp32_gate)
-      │                                                  │
-      │ 1. email + password login                        │ 1. device account login
-      ▼                                                  ▼
- Firebase Authentication ◄───────────── (REST, HTTPS) ───┘
-      │
-      │ 2. ID token                                      2. ID token
-      ▼                                                  ▼
- Firebase Realtime Database ◄── PUT device/lastSeen = server timestamp (every 10 s)
-      │
-      └──► onValue(device/lastSeen) → "Online" if younger than 45 s
+ Phone / browser (web/)                              ESP32 (src/esp32_gate)
+      │                                                     │
+      │ email + password login                              │ device account login (REST)
+      ▼                                                     ▼
+ Firebase Authentication ──── ID token ────┬──── ID token ──┘
+                                           ▼
+                            Firebase Realtime Database
+   button press ──► commands/<id>  status: pending  ◄── poll every 2 s
+                                    status: taken   ◄── written BEFORE transmitting
+                                    status: done    ◄── after the RF code was sent
+   page follows the status ◄───────
+   page shows Online/Offline ◄───── device/lastSeen, device/rssi ◄── every 10 s
+                                                                      │
+                                                                      ▼
+                                                     RF433-JTX ──433.92 MHz──► gate
 ```
 
-The heartbeat is written as a server-side timestamp, so the ESP32 does not need an accurate clock. The web page compares it with the browser's time.
-
-Planned extension: the buttons write a command into the database, the ESP32 reads it, transmits the RF code and acknowledges it.
+Each command is executed at most once: the ESP32 marks it `taken` before transmitting, so a restart in between can lose a command but never repeat it. Commands older than 20 seconds, or sent before the ESP32 started, expire without transmission.
 
 ## Configuration and secrets
 
@@ -100,6 +104,7 @@ Files containing credentials are **not** in the repository. Each has an `example
 |---|---|---|
 | `web/firebase-config.example.js` | `web/firebase-config.local.js` | Firebase web app configuration |
 | `src/esp32_gate/secrets.example.h` | `src/esp32_gate/secrets.h` | Wi-Fi credentials, Firebase API key and database URL, ESP32 device account |
+| `src/esp32_gate/rf_codes.example.h` | `src/esp32_gate/rf_codes.h` | RF protocol, timing and the three gate codes |
 
 Setup instructions: [`web/README.md`](web/README.md) (Firebase project, users, rules, hosting) and [`src/esp32_gate/README.md`](src/esp32_gate/README.md) (firmware).
 
@@ -197,7 +202,7 @@ The RXB60 data output is connected to GPIO 34 of the ESP32.
 - Matplotlib
 - Firebase (Authentication, Realtime Database, Hosting) and the Firebase CLI
 - HTML / CSS / JavaScript (web control panel)
-- ESP32 Arduino core (`WiFi`, `WiFiClientSecure`, `HTTPClient`; no extra libraries for the Wi-Fi firmware)
+- ESP32 Arduino core (`WiFi`, `WiFiClientSecure`, `HTTPClient`) and the ArduinoJson library
 
 ## RF transmitter
 
@@ -224,7 +229,7 @@ The `delay()` function is used for software timing between operations; it is not
 
 **Safety note:** Only test with devices you own or are authorized to control. Do not expose real access codes or working credentials in a public repository.
 
-The Wi-Fi / Firebase firmware that will later use this transmitter is in [`src/esp32_gate`](src/esp32_gate/README.md).
+The final firmware in [`src/esp32_gate`](src/esp32_gate/README.md) drives the same transmitter; its RF settings come from the private `rf_codes.h`.
 
 ## Data security
 
@@ -238,6 +243,7 @@ Raw RF measurements and working RF codes capable of reproducing a specific gate-
 
 ## Future development
 
-1. Command path from the web buttons to the ESP32
-2. Merging RF transmission into the Wi-Fi firmware
-3. Hardening: restricting control to named users
+1. Gate position feedback (e.g. a magnetic switch), so the page shows whether a gate is open
+2. Authenticated remote firmware update
+3. User management on the page instead of the Firebase console
+4. Optional: other control interfaces (e.g. bot-based control)

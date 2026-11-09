@@ -2,6 +2,8 @@
 web/firebase-config.local.js
 web/firebase_config*
 src/esp32_gate/secrets.h
+src/esp32_gate/rf_codes.h
+rf_codes.h
 *.local.js
 
 # Firebase local cache / logs
