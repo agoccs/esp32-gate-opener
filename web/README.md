@@ -38,7 +38,7 @@ The buttons are active only when the user is allowed and the ESP32 is online.
 1. The first tap asks for confirmation ("Biztos? Érintsd meg újra") for 3 seconds; the second tap sends the command.
 2. The page creates `commands/<id>` with `gate` (`bal`, `jobb` or `kapu`), `status: "pending"`, a server timestamp and the user's id.
 3. The ESP32 picks it up within about 2 seconds and updates the status; the page shows each step under the gate name.
-4. The button stays disabled for 10 seconds after sending.
+4. The button stays disabled for 2 seconds after sending.
 
 | Status | Shown as |
 |---|---|

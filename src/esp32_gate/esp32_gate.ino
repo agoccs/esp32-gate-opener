@@ -23,8 +23,8 @@ const unsigned long TOKEN_LIFETIME_MS = 50UL * 60UL * 1000UL;  // token valid fo
 const unsigned long WIFI_RETRY_MS     = 10UL * 1000UL;
 const unsigned long WATCHDOG_MS       = 10UL * 60UL * 1000UL;  // restart if no heartbeat for 10 min
 const double        COMMAND_MAX_AGE_MS = 20000.0;              // older commands expire
-const unsigned long GATE_COOLDOWN_MS  = 10UL * 1000UL;         // per gate
-const int           MAX_RUNS_PER_MIN  = 6;                     // all gates together
+const unsigned long GATE_COOLDOWN_MS  = 2000UL;                 // per gate
+const int           MAX_RUNS_PER_MIN  = 12;                    // all gates together
 const int           MAX_BATCH         = 10;                    // commands handled per poll
 
 struct Gate {

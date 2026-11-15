@@ -27,8 +27,8 @@ The final ESP32 firmware of the project. It connects to Wi-Fi and Firebase, repo
 | sent after this boot | `expired` (before boot) |
 | not older than 20 s | `expired` (too old) |
 | RF code configured for the gate | `failed` (no code) |
-| no transmission on the same gate in the last 10 s | `failed` (cooldown) |
-| at most 6 transmissions in the last 60 s | `failed` (rate limit) |
+| no transmission on the same gate in the last 2 s | `failed` (cooldown) |
+| at most 12 transmissions in the last 60 s | `failed` (rate limit) |
 
 If all checks pass, the ESP32 writes `taken` **before** transmitting, sends the RF code, then writes `done`. If writing `taken` fails, nothing is transmitted. A restart between the two steps can lose a command but can never repeat it.
 

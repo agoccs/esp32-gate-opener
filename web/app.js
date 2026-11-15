@@ -15,7 +15,7 @@ const gateButtons = [...document.querySelectorAll(".gate-button[data-gate]")];
 const SDK = "https://www.gstatic.com/firebasejs/11.10.0";
 const ONLINE_MAX_AGE_MS = 45_000;   // heartbeat older than this = Offline
 const CONFIRM_WINDOW_MS = 3_000;    // second tap must come within this time
-const LOCK_AFTER_SEND_MS = 10_000;  // button stays disabled after sending
+const LOCK_AFTER_SEND_MS = 2_000;   // button stays disabled after sending
 const NO_ANSWER_MS = 25_000;        // still pending after this = not delivered
 const WATCH_MAX_MS = 40_000;        // stop following a command after this
 
